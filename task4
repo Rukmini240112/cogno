@@ -1,0 +1,88 @@
+import java.util.Random;
+import java.util.Scanner;
+import java.util.HashSet;
+
+public class Hangman {
+    private static final String[] HANGMAN_PICS = {
+        " +---+\n     |\n     |\n     |\n    ===",
+        " +---+\n O   |\n     |\n     |\n    ===",
+        " +---+\n O   |\n |   |\n     |\n    ===",
+        " +---+\n O   |\n/|   |\n     |\n    ===",
+        " +---+\n O   |\n/|\\  |\n     |\n    ===",
+        " +---+\n O   |\n/|\\  |\n/    |\n    ===",
+        " +---+\n O   |\n/|\\  |\n/ \\  |\n    ==="
+    };
+
+    public static void main(String[] args) {
+        // List of words to choose from
+        String[] words = {"java", "python", "javascript", "hangman", "programming"};
+        
+        // Select a random word
+        Random random = new Random();
+        String wordToGuess = words[random.nextInt(words.length)];
+        
+        // Game state
+        char[] wordDisplay = new char[wordToGuess.length()];
+        for (int i = 0; i < wordToGuess.length(); i++) {
+            wordDisplay[i] = '_';
+        }
+        
+        HashSet<Character> incorrectGuesses = new HashSet<>();
+        Scanner scanner = new Scanner(System.in);
+        int incorrectCount = 0;
+        
+        // Main game loop
+        while (incorrectCount < HANGMAN_PICS.length - 1) {
+            // Display current state
+            System.out.println(HANGMAN_PICS[incorrectCount]);
+            System.out.print("Word to guess: ");
+            for (char c : wordDisplay) {
+                System.out.print(c + " ");
+            }
+            System.out.println("\nIncorrect guesses: " + incorrectGuesses);
+            
+            // Prompt user for a letter
+            System.out.print("Guess a letter: ");
+            char guessedLetter = scanner.next().toLowerCase().charAt(0);
+            
+            // Check if the letter is in the word
+            boolean correctGuess = false;
+            for (int i = 0; i < wordToGuess.length(); i++) {
+                if (wordToGuess.charAt(i) == guessedLetter) {
+                    wordDisplay[i] = guessedLetter;
+                    correctGuess = true;
+                }
+            }
+            
+            if (!correctGuess) {
+                if (!incorrectGuesses.contains(guessedLetter)) {
+                    incorrectGuesses.add(guessedLetter);
+                    incorrectCount++;
+                } else {
+                    System.out.println("You already guessed that letter.");
+                }
+            }
+            
+            // Check if the user has won
+            boolean hasWon = true;
+            for (char c : wordDisplay) {
+                if (c == '_') {
+                    hasWon = false;
+                    break;
+                }
+            }
+            
+            if (hasWon) {
+                System.out.println("Congratulations! You've guessed the word: " + wordToGuess);
+                break;
+            }
+        }
+        
+        if (incorrectCount == HANGMAN_PICS.length - 1) {
+            System.out.println(HANGMAN_PICS[incorrectCount]);
+            System.out.println("Game over! The word was: " + wordToGuess);
+        }
+        
+        scanner.close();
+    }
+}
